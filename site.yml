@@ -1,0 +1,49 @@
+---
+- name: minecraft server
+  hosts: "minecraft-server"
+  sudo: True
+  vars:
+    minecraft_install_dir: /opt/minecraft-server
+    minecraft_server_download_url: https://s3.amazonaws.com/Minecraft.Download/versions/1.8.9/minecraft_server.1.8.9.jar
+  tasks:
+    
+    - name: install repo to get java
+      apt_repository:
+        repo: "ppa:webupd8team/java"
+        update_cache: yes
+
+    - name: Automatically select the Oracle License
+      shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+      changed_when: false
+        
+    - name: install oracle java
+      apt:
+        name: oracle-java7-installer
+
+    - name: minecraft user
+      user:
+        name: minecraft
+
+    - name: install directory
+      file:
+        state: directory
+        dest: "{{ minecraft_install_dir }}"
+
+    - name: download the minecraft.jar
+      get_url:
+        url: "{{ minecraft_server_download_url }}" 
+        dest: "{{ minecraft_install_dir }}/minecraft_server.jar"
+
+    - name: minecraft user owns everything
+      command: chown -R minecraft:minecraft {{ minecraft_install_dir }} 
+      
+    - name: init script
+      template:
+        dest: /etc/init/minecraft-server.conf
+        src: templates/etc/init/minecraft-server.conf
+
+    - name: start and enable minecraft-server
+      service:
+        name: minecraft-server
+        state: started
+        enabled: yes
