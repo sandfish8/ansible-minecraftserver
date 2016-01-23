@@ -1,6 +1,6 @@
-# Setup Mine Craft
+# Setup MineCraft Server
 
-An ansible playbook to setup a minecraft server  
+An ansible playbook to setup a minecraft server on Trusty host
 
 To run the playbook, you'll want to do something like this:  
 ```
@@ -107,4 +107,14 @@ java.io.FileNotFoundException: whitelist.json (No such file or directory)
 [18:26:35] [Server thread/INFO]: Preparing spawn area: 96%
 [18:26:35] [Server thread/INFO]: Done (17.887s)! For help, type "help" or "?"
 
+```
+
+Ctrl-C to stop this server.  
+You'll want to manage it using ```service minecraft-server stop|start|restart``` going forward.  
+
+### Logging
+
+Since we're managing the process with upstart the logs for your minecraftserver will land in:
+```
+/var/log/upstart/minecraft-server.log
 ```
